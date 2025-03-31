@@ -245,6 +245,7 @@ const DateTimePicker = () => {
     setSelectedCategory(null);
     setAge("");
     setErrors({});
+    setCurrentMonth(new Date()); // Reset to the current month
     const ageError = document.querySelector(".age-error");
     const ageInput = document.querySelector(".input");
     if (ageError) {
@@ -468,9 +469,21 @@ const DateTimePicker = () => {
       <div className="card">
         <div className="section">
           <div className="month-selection">
-            <button onClick={() => handleMonthChange(-1)}>{"<"}</button>
-            <span>{format(currentMonth, "MMMM yyyy")}</span>
-            <button onClick={() => handleMonthChange(1)}>{">"}</button>
+            <button
+              style={{ fontSize: "30px", marginRight: "auto" }}
+              onClick={() => handleMonthChange(-1)}
+            >
+              {"<"}
+            </button>
+            <span style={{ fontSize: "20px" }}>
+              {format(currentMonth, "MMMM yyyy")}
+            </span>
+            <button
+              style={{ fontSize: "30px", marginLeft: "auto" }}
+              onClick={() => handleMonthChange(1)}
+            >
+              {">"}
+            </button>
           </div>
 
           <div className="calendar-header">
