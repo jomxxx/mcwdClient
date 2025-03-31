@@ -470,16 +470,20 @@ const DateTimePicker = () => {
         <div className="section">
           <div className="month-selection">
             <button
-              style={{ fontSize: "30px", marginRight: "auto" }}
+              style={{
+                fontSize: "30px",
+                marginRight: "auto",
+                color: "#174ab8",
+              }}
               onClick={() => handleMonthChange(-1)}
             >
               {"<"}
             </button>
-            <span style={{ fontSize: "20px" }}>
+            <span style={{ fontSize: "20px", color: "#00228a" }}>
               {format(currentMonth, "MMMM yyyy")}
             </span>
             <button
-              style={{ fontSize: "30px", marginLeft: "auto" }}
+              style={{ fontSize: "30px", marginLeft: "auto", color: "#174ab8" }}
               onClick={() => handleMonthChange(1)}
             >
               {">"}
@@ -554,7 +558,10 @@ const DateTimePicker = () => {
             }`}
           >
             <div className="close-btn">
-              <button onClick={() => setIsCategoryPopupVisible(false)}>
+              <button
+                style={{ fontSize: "30px" }}
+                onClick={() => setIsCategoryPopupVisible(false)}
+              >
                 ×
               </button>
             </div>{" "}
@@ -605,7 +612,12 @@ const DateTimePicker = () => {
           )}
           <div className={`time-popup ${isTimePopupVisible ? "active" : ""}`}>
             <div className="close-btn">
-              <button onClick={() => setIsTimePopupVisible(false)}>×</button>
+              <button
+                style={{ fontSize: "30px" }}
+                onClick={() => setIsTimePopupVisible(false)}
+              >
+                ×
+              </button>
             </div>
             {timeSlots.filter((slot) => slot.selectable).length === 0 ? (
               <p>No vacant time available</p>

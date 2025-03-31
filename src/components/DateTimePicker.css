@@ -42,6 +42,7 @@ body {
   width: 100%;
   gap: 30px;
   overflow: hidden;
+  border-top: 10px solid #174ab8;
 }
 
 .section {
@@ -82,7 +83,7 @@ body {
   font-family: "Roboto", sans-serif;
   background: #d9eafd;
   padding: 10px 0;
-  border-radius: 4px;
+  border-radius: 0px;
 }
 
 .calendar-day {
@@ -94,7 +95,7 @@ body {
 .calendar-btn {
   padding: 15px; /* Increased padding */
   border: none;
-  border-radius: 4px; /* Changed from 50% to 8px to make it square */
+  border-radius: 0px; /* Changed from 50% to 8px to make it square */
   font-size: 16px; /* Increased font size */
   background: #bcccdc; /* Changed background color */
   color: #333;
@@ -112,7 +113,7 @@ body {
 }
 
 .calendar-btn.active {
-  background: #4a90e2;
+  background: #174ab8;
   color: white;
   font-weight: bold;
 }
@@ -167,7 +168,7 @@ body {
 .time-btn {
   padding: 15px; /* Increased padding */
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 0px;
   font-size: 16px; /* Increased font size */
   background: #f4f4f4;
   cursor: pointer;
@@ -184,7 +185,7 @@ body {
 .category-btn {
   padding: 15px; /* Increased padding */
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 0px;
   font-size: 16px; /* Increased font size */
   background: #f4f4f4;
   cursor: pointer;
@@ -205,9 +206,9 @@ body {
 
 .time-btn.active,
 .category-btn.active {
-  background: #4a90e2;
+  background: #174ab8;
   color: white;
-  border-color: #4a90e2;
+  border-color: #174ab8;
   font-weight: bold;
 }
 
@@ -296,6 +297,7 @@ body.modal-open {
   color: #666;
   text-align: center;
   margin-top: 10px;
+  margin-bottom: 40px;
   font-family: "Roboto", sans-serif; /* Updated font */
 }
 
@@ -372,7 +374,7 @@ body.modal-open {
 }
 
 .submit-btn {
-  background: #4a90e2;
+  background: #174ab8;
   color: white;
 }
 
@@ -574,7 +576,7 @@ body.modal-open {
   }
 
   .category-popup-trigger.active {
-    background: #4a90e2;
+    background: #00228a;
     color: white;
     font-weight: bold;
   }
@@ -1154,7 +1156,7 @@ body.modal-open {
 }
 
 .modal-confirm-btn {
-  background: #357ab8;
+  background: #174ab8;
   color: #fff;
 }
 
@@ -1176,7 +1178,7 @@ body.modal-open {
 
 .modal-confirm-btn.copy-btn,
 .modal-confirm-btn.download-btn {
-  background: #357ab8;
+  background: #174ab8;
 }
 
 .modal-confirm-btn.copy-btn:hover,
