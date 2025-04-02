@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { QRCodeCanvas } from "qrcode.react"; // Import QRCodeCanvas component
 import html2canvas from "html2canvas"; // Import html2canvas for screenshot functionality
+import { FaSpinner } from "react-icons/fa"; // Import spinner icon
+import { debounce } from "lodash"; // Import lodash debounce
 import {
   format,
   addDays,
@@ -50,7 +52,7 @@ const DateTimePicker = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isTimePopupVisible, setIsTimePopupVisible] = useState(false);
   const [isCategoryPopupVisible, setIsCategoryPopupVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false); // Track mobile view
   const [errors, setErrors] = useState({});
   const [timeSlots, setTimeSlots] = useState([]);
   const [isSubmitModalVisible, setIsSubmitModalVisible] = useState(false);
@@ -58,6 +60,16 @@ const DateTimePicker = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isTimeRestrictedModalVisible, setIsTimeRestrictedModalVisible] =
     useState(false);
+  const [isLoadingTimeSlots, setIsLoadingTimeSlots] = useState(false); // Add loading state
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -128,8 +140,10 @@ const DateTimePicker = () => {
     }
   }, [isTimePopupVisible, isCategoryPopupVisible]);
 
-  useEffect(() => {
-    const checkTimeSlots = async () => {
+  const checkTimeSlots = useCallback(
+    debounce(async () => {
+      if (isMobile) return; // Skip loading spinner on mobile view
+      setIsLoadingTimeSlots(true); // Set loading to true
       try {
         const response = await fetch(
           `${
@@ -173,11 +187,16 @@ const DateTimePicker = () => {
         setTimeSlots(slots);
       } catch (error) {
         console.error("Error fetching time slots:", error);
+      } finally {
+        setIsLoadingTimeSlots(false); // Set loading to false
       }
-    };
+    }, 300), // Debounce with a delay of 300ms
+    [isMobile, selectedDate, availableTimes]
+  );
 
+  useEffect(() => {
     checkTimeSlots();
-  }, [selectedDate]);
+  }, [checkTimeSlots]);
 
   useEffect(() => {
     if (isSubmitModalVisible) {
@@ -271,8 +290,8 @@ const DateTimePicker = () => {
 
     if (
       (selectedHour === 22 && selectedMinute >= 30) || // 10:30 PM to 11:59 PM
-      selectedHour >= 23 ||
-      selectedHour < 2 || // 11:00 PM to 1:59 AM
+      selectedHour >= 23 || // 11:00 PM to 11:59 PM
+      selectedHour < 2 || // 12:00 AM to 1:59 AM
       (selectedHour === 2 && selectedMinute === 0) // Exactly 2:00 AM
     ) {
       setIsTimeRestrictedModalVisible(true);
@@ -466,7 +485,56 @@ const DateTimePicker = () => {
 
   return (
     <div className="container">
-      <div className="card">
+      {!isMobile && (
+        <div
+          className="header"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw", // Full screen width
+            backgroundColor: "#00228a", // Corrected color format
+            color: "white", // Added text color
+            padding: "10px 0", // Added padding for better appearance
+            zIndex: 1000, // Ensure it stays above other elements
+            display: "flex", // Use flexbox for layout
+            justifyContent: "space-between", // Space between elements
+            alignItems: "center", // Center vertically
+            paddingLeft: "20px", // Add padding for left content
+            paddingRight: "20px", // Add padding for right content
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "Arial black",
+              fontSize: "18px",
+              fontWeight: "bold",
+            }}
+          >
+            Metropolitan Cebu Water District
+          </span>
+          <span
+            style={{
+              fontSize: "14px",
+              paddingRight: "35px",
+              fontFamily: "Arial",
+            }}
+          >
+            {currentDateTime.toLocaleString("en-US", {
+              weekday: "long", // e.g., "Monday"
+              month: "long", // e.g., "August"
+              day: "numeric", // e.g., "15"
+              year: "numeric", // e.g., "2025"
+              hour: "2-digit", // e.g., "03"
+              minute: "2-digit", // e.g., "30"
+              second: "2-digit", // e.g., "45"
+              hour12: true, 
+            })}
+          </span>
+        </div>
+      )}
+      <div style={{ marginTop: isMobile ? "0" : "60px" }} className="card">
+        {/* Adjusted margin to account for the fixed header */}
         <div className="section">
           <div className="month-selection">
             <button
@@ -477,16 +545,40 @@ const DateTimePicker = () => {
               }}
               onClick={() => handleMonthChange(-1)}
             >
-              {"<"}
+              {
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="currentColor"
+                  className="bi bi-caret-left-fill"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+                </svg>
+              }
             </button>
-            <span style={{ fontSize: "20px", color: "#00228a" }}>
+            <span
+              style={{ fontSize: "18px", fontWeight: "bold", color: "#555" }}
+            >
               {format(currentMonth, "MMMM yyyy")}
             </span>
             <button
               style={{ fontSize: "30px", marginLeft: "auto", color: "#174ab8" }}
               onClick={() => handleMonthChange(1)}
             >
-              {">"}
+              {
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="currentColor"
+                  className="bi bi-caret-right-fill"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+                </svg>
+              }
             </button>
           </div>
 
@@ -530,7 +622,7 @@ const DateTimePicker = () => {
         </div>
 
         <div className="section">
-          <h3 className="subtitle">Category</h3>
+          <h3 className="subtitle"> Category</h3>
           <div className={`grid ${errors.selectedCategory ? "error" : ""}`}>
             {categories.map((category, index) => (
               <button
@@ -589,19 +681,28 @@ const DateTimePicker = () => {
         </div>
 
         <div className="section">
-          <h3 className="subtitle">Available Times</h3>
-          <div className={`grid ${errors.selectedTime ? "error" : ""}`}>
-            {timeSlots.map(({ time, selectable }, index) => (
-              <button
-                key={index}
-                className={`time-btn ${selectedTime === time ? "active" : ""}`}
-                onClick={() => selectable && handleTimeChange(time)}
-                disabled={!selectable}
-              >
-                {time}
-              </button>
-            ))}
-          </div>
+          <h3 className="subtitle">Appointment Slots</h3>
+          {!isMobile && isLoadingTimeSlots ? ( // Show loading spinner only on web view
+            <div className="loading-container">
+              <FaSpinner className="spinner-icon" />
+              <p>Fetching available slots...</p>
+            </div>
+          ) : (
+            <div className={`grid ${errors.selectedTime ? "error" : ""}`}>
+              {timeSlots.map(({ time, selectable }, index) => (
+                <button
+                  key={index}
+                  className={`time-btn ${
+                    selectedTime === time ? "active" : ""
+                  }`}
+                  onClick={() => selectable && handleTimeChange(time)}
+                  disabled={!selectable}
+                >
+                  {time}
+                </button>
+              ))}
+            </div>
+          )}
           {isMobile && (
             <button
               className="time-popup-trigger"
@@ -619,7 +720,12 @@ const DateTimePicker = () => {
                 ×
               </button>
             </div>
-            {timeSlots.filter((slot) => slot.selectable).length === 0 ? (
+            {isMobile && isLoadingTimeSlots ? ( // Show loading spinner only inside modal on mobile
+              <div className="loading-container">
+                <FaSpinner className="spinner-icon" />
+                <p>Fetching available slots...</p>
+              </div>
+            ) : timeSlots.filter((slot) => slot.selectable).length === 0 ? (
               <p>No vacant time available</p>
             ) : (
               timeSlots
