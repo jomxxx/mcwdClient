@@ -1,1 +1,1 @@
-website link: bkg.avsr.com.ph
+website link: https://bkg.avsr.com.ph
